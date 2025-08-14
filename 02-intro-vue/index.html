@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="myApp" class="container mt-5">
+    <h3 class="mb-3">Batman quotes: {{totalQuotes}}</h3>
+    
+    <hr class="container mb-3">
+    
+    <div class="container shadow-sm p-3 mb-5 bg-body rounded">
+      <input
+        type="text"
+        class="form-control mb-3"
+        placeholder="Escribe una frase..."
+        @keypress.enter="addQuote"
+        v-model="newMessage"
+      >
+      <p class="form-text">Pulsa enter para añadir una frase</p>
+      <hr>
+      <button class="btn btn-primary mb-3" @click="toggleAuthor">{{textButtonAuthor}} autores</button>
+      <!-- <button class="btn btn-outline-primary mb-3 ms-3" @click="addQuote">Añadir frase</button> -->
+      <ul>
+        <li v-for="({quote, author}, index) in quotes">
+          {{index}} - {{quote}}
+          <blockquote v-if="showAuthor">{{author}}</blockquote>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="app.js"></script>
+</body>
+</html> 
