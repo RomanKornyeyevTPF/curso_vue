@@ -1,5 +1,4 @@
 <template>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <h1>Mi primera app de vue</h1>
 
   <MyCounter :value="5" />
