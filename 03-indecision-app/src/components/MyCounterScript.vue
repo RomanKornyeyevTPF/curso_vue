@@ -11,7 +11,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent } from 'vue';
+import { useCounter } from '../composables/useCounter';
 
 export default defineComponent({
   props: {
@@ -21,8 +22,7 @@ export default defineComponent({
     }
   },
   setup( props) {
-    const counter = ref(props.value);
-    const squareCounter = computed(() => counter.value * counter.value);
+    const { counter, squareCounter } = useCounter(props.value);
 
     return {
       counter,
@@ -30,15 +30,4 @@ export default defineComponent({
     };
   }
 });
-
-// import { computed, ref } from 'vue';
-
-// interface Props {
-//   value: number;
-// }
-
-// const props = defineProps<Props>();
-
-// const counter = ref( props.value );
-// const squareCounter = computed(() => counter.value * counter.value);
 </script>

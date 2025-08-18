@@ -1,9 +1,9 @@
 <template>
   <h1>Mi primera app de vue</h1>
 
-  <MyCounter :value="5" />
-  <MyCounterScript :value="5" />
-  <MyCounterScript2 :value="5" />
+  <MyCounter :value="1" />
+  <MyCounterScript :value="2" />
+  <MyCounterScript2 :value="3" />
 </template>
 
 <script lang="ts" setup>

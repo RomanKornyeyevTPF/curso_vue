@@ -318,7 +318,81 @@ Cuando hacemos un componente SFC (Single File Component), podemos poner un bloqu
 
 El color se está aplicando a todos los H1, pero como el `<style>` tiene scoped, solo aplica a este componente.
 
-### v-*
+<hr>
+
+### Reactividad, setup, defineComponents (IMP)
+#### 3 Setup y defineComponent (IMP)
+Para crear reactividad en un componente o script (ej: ref, etc.) se usa "setup" ¿Qué es? En Vue 3, la Composition API introduce la función setup() ¿Qué es? Es un método, este método es el punto de entrada donde declaras props, reactividad, computed, métodos, composables, etc.
+
+Y se puede hacer de 2 maneras:
+
+1. `<script setup>` (forma moderna):
+
+    ```html
+    <template> 
+      <section class="container mt-5">
+        <h3>counter {{ counter }}</h3>
+        <h3>square: {{ squareCounter }}</h3>
+
+        <div>
+          <button @click="counter++" class="btn">+1</button>
+          <button @click="counter--" class="btn">-1</button>
+        </div>
+      </section>
+    </template>
+
+    <script lang="ts" setup>
+    import { useCounter } from '../composables/useCounter';
+
+    interface Props {
+      value: number;
+    }
+
+    const props = defineProps<Props>();
+    const { counter, squareCounter } = useCounter(props.value);
+    </script>
+    ```
+
+    - No se necesita export default ni definir explícitamente setup().
+
+    - Todo lo que declares dentro del bloque ya está disponible en el template.
+
+    - Ideal para proyectos nuevos: sintaxis más limpia y directa.
+
+    - defineProps y defineEmits se usan directamente para props y eventos.
+
+2. `setup()` dentro de defineComponent (forma clásica):
+
+    ```html
+    <script lang="ts">
+    import { defineComponent } from 'vue';
+    import { useCounter } from '../composables/useCounter';
+
+    export default defineComponent({
+      props: {
+        value: { type: Number, required: true }
+      },
+      setup(props) {
+        const { counter, squareCounter } = useCounter(props.value);
+        return { counter, squareCounter };
+      }
+    });
+    </script>
+    ```
+
+    - Requiere export default defineComponent({...}).
+
+    - `setup(props)` se define explícitamente y se debe hacer return de todo lo que se quiere usar en el template.
+
+    - Más verboso, pero compatible con opciones clásicas de Vue.
+
+
+> **Nota:**  
+> Solo se puede utilizar un setup por componente. NO PUEDEN HABER VARIOS.
+
+<hr>
+
+### v-*, eventos
 
 #### v-on
 Sirve para **escuchar eventos** en elementos del DOM.  

@@ -11,28 +11,17 @@
 </template>
 
 <script lang="ts" setup>
-// ------- USANDO COMPOSABLE -----
+// ------- USANDO COMPOSABLE (REUTILIZACIÓN DE LÓGICA) -----
 import { useCounter } from '../composables/useCounter';
 
-// interface Props {
-//   value: number;
-// }
+interface Props {
+  value: number;
+}
 
-// const props = defineProps<Props>();
+const props = defineProps<Props>();
 
-const { counter, squareCounter } = useCounter(10);
+const { counter, squareCounter } = useCounter(props.value);
 // ------- FIN COMPOSABLE --------
-
-// import { computed, ref } from 'vue';
-
-// interface Props {
-//   value: number;
-// }
-
-// const props = defineProps<Props>();
-
-// const counter = ref( props.value );
-// const squareCounter = computed(() => counter.value * counter.value);
 </script>
 
 <style scoped>
