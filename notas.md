@@ -225,6 +225,38 @@ Esto nos genera una interfaz completa en base al JSON, puede contener errores, p
 
 ## Vue
 
+### --- ERRORES ---
+
+#### ERROR TAILWIND DIRECTIVA @APPLY
+Al instalar tailwind, al contrario de lo que se muestra en el vídeo (tailwind 3), nosotros estaremos usando tailwind 4. Por lo que cambian algunas cosas. Entonces, si queremos usar `@apply` entre otros, por ejemplo en un componente:
+
+```html
+<style scoped>
+  .btn{
+    @apply bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded;
+  }
+</style>
+```
+Nos dará error, por lo que se deberá hacer un `@reference` a la hoja principal de css (donde está el import) desde el propio componente. Y adicionalmente nos interesará meter un atributo `scoped` en el `<style>`, para que estos estilos se apliquen solamente a este componente. quedando así:
+
+```html
+<style scoped>
+  @reference "../style.css";
+
+  .btn{
+    @apply bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded;
+  }
+</style>
+```
+
+O bien, todos los `@apply` deberán ir en el `style.css` general (donde está el `@import "tailwindcss";`).
+
+
+
+
+
+### --- FIN ERRORES ---
+
 ### Aclaraciones
 
 #### 1
