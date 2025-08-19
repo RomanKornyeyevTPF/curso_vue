@@ -265,8 +265,33 @@ Normalmente en script (ts) ponemos `nombreConstante.value`. Pero en el template 
 #### 2
 El atributo setup en `<script lang="ts" setup>` indica que el componente Vue usa la Composition API (lo moderno) con sintaxis simplificada. Permite declarar variables, funciones y composables directamente en el script, haciéndolos accesibles en el template sin necesidad de retornar explícitamente. Facilita la organización y reutilización de lógica en componentes Vue 3.
 
+#### 3
+##### Props en Vue: camelCase vs kebab-case
+
+En Vue, los **props se definen en `camelCase` en el componente hijo**,  
+pero en los **templates se pasan normalmente en `kebab-case`** (convención común).
+
+Vue hace la conversión automáticamente, por lo que ambos funcionan.
+
+```html
+<!-- Componente padre -->
+<ChatBubble :its-mine="true" message="hola mundo" />
+```
+
+```html
+<!-- Componente hijo -->
+<script setup lang="ts">
+defineProps<{
+  itsMine: boolean
+  message: string
+}>()
+</script>
+```
+
 ### Atajos
+
 #### Onclick / v-on:click
+
 En vue un event listener de onclick se escribe como `v-on:click="nombreFuncion"`.<br>
 Pero esto se puede abreviar a `@click="nombreFuncion"`.
 
@@ -296,6 +321,19 @@ const app = createApp({
 });
 
 app.mount('#myApp');
+```
+
+#### Bindeos (v-bind)
+
+En Vue, `v-bind` sirve para pasar valores dinámicos a props o atributos.  
+Su forma abreviada es `:`.
+
+```html
+<!-- Forma larga -->
+<ChatBubble v-bind:its-mine="true" />
+
+<!-- Forma corta (más común) -->
+<ChatBubble :its-mine="true" />
 ```
 
 ### Estilos
@@ -449,6 +487,28 @@ Normalmente no se escribe `v-bind` completo, sino que se usa su forma abreviada 
 
 Esto se pondría en el componente padre.
 
+También se puede utilizar en un `v-for`, para enlazar automáticamente las claves de un objeto, de la siguiente manera:
+
+```html
+<div class="flex flex-col space-y-2">
+  <ChatBubble
+    v-for="message in messages"
+    :key="message.id"
+    v-bind="message" 
+  />
+
+    <!-- v-bind hace el mapeo automático de claves, equivalente a: -->
+    <!--
+    :its-mine="message.itsMine"
+    :message="message.message"
+    :image="message.image"
+    -->
+    <!-- ***Estas claves son iguales en ambos componentes
+    y vienen de una interfaz -->
+
+</div>
+```
+
 #### defineProps()
 
 Padre ---> hijo.<br>
@@ -510,4 +570,47 @@ Esto nos puede interesar cuando el código crezca mucho.
 #### defineEmits()
 
 Hijo ---> padre.<br>
-Se usa en un componente hijo para declarar los eventos que puede emitir hacia su componente padre.
+
+Con `defineEmits` se definen los eventos que un componente puede **emitir** hacia su padre.  
+Se pueden tipar para mayor seguridad en TypeScript.
+
+```html
+<script setup lang="ts">
+const emit = defineEmits<{
+  sendMessage: [text: string];
+}>();
+
+function submit() {
+  emit("sendMessage", message.value);
+}
+</script>
+```
+
+En el padre, se escucha el evento con v-on o su abreviado @:
+
+```html
+<!-- Forma larga -->
+<ChatInput v-on:send-message="handleMessage" />
+
+<!-- Forma corta (más común) -->
+<ChatInput @send-message="handleMessage" />
+```
+
+`defineEmits` se monta cuando el componente se inicializa.
+
+Eso te devuelve la función emit.
+
+Luego, cuando dentro de tu componente llamas a emit("sendMessage", valor), se lanza el evento sendMessage.
+
+El padre escucha ese evento con @send-message="miFuncion", y ahí es donde se ejecuta tu lógica.
+
+> RESUMEN DE FLUJO
+
+> **Componente hijo**
+> 1. Declara los eventos con `defineEmits`.
+> 2. Cuando ocurre algo (ej: un `click`), llama a `emit("evento", datos)`.
+
+> **Componente padre**
+> 1. Escucha el evento con `@nombre-evento="funcion"`.
+> 2. Ejecuta la función correspondiente (ej: hacer `push` en un array).
+> 3. Como el array es **reactivo**, la vista se actualiza automáticamente (ej: la lista de mensajes).
