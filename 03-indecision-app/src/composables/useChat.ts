@@ -6,6 +6,7 @@ import { ref } from "vue";
 export const useChat = () => {
 
   const messages = ref<ChatMessage[]>([]);
+  const loading = ref(false);
 
   const getHerResponse = async() => {
     const resp = await fetch('https://yesno.wtf/api');
@@ -26,6 +27,8 @@ export const useChat = () => {
     // Evaluar si termina con un ?
     if (!text.endsWith('?')) return;
 
+    loading.value = true; // <- activamos loading
+
     await sleep(1.5);
     const { answer, image } = await getHerResponse();
 
@@ -36,11 +39,13 @@ export const useChat = () => {
       image: image,
     });
 
+    loading.value = false; // <- desactivamos loading
   };
 
   return {
     // Properties
     messages,
+    loading,
 
     // Methods
     onMessage,

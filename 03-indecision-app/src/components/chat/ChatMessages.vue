@@ -11,6 +11,15 @@
         <!-- :its-mine="message.itsMine"
         :message="message.message"
         :image="message.image" -->
+
+      <div v-if="loading" class="flex items-center space-x-1 text-gray-600">
+        <i class="fa-solid fa-pen"></i>
+        <span>Escribiendo</span>
+        <span class="animate-bounce" style="animation-delay:0ms">.</span>
+        <span class="animate-bounce" style="animation-delay:150ms">.</span>
+        <span class="animate-bounce" style="animation-delay:300ms">.</span>
+      </div>
+
     </div>
   </div>
 </template>
@@ -22,17 +31,16 @@ import { ref, watch } from 'vue';
 
 interface Props {
   messages: ChatMessage[];
+  loading: boolean; // Optional prop to indicate loading state
 }
 
 const { messages } = defineProps<Props>();
-
 const chatRef = ref<HTMLDivElement|null>(null);
 
 watch(
   () => messages,
   () => {
-    setTimeout(() => {
-      console.log('ChatMessages updated:', messages.length, 'messages');
+    setTimeout(() => {      
       chatRef.value?.scrollTo({
         top: chatRef.value.scrollHeight,
         behavior: 'smooth'
