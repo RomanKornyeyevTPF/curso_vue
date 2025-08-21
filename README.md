@@ -614,3 +614,5 @@ El padre escucha ese evento con @send-message="miFuncion", y ahí es donde se ej
 > 1. Escucha el evento con `@nombre-evento="funcion"`.
 > 2. Ejecuta la función correspondiente (ej: hacer `push` en un array).
 > 3. Como el array es **reactivo**, la vista se actualiza automáticamente (ej: la lista de mensajes).
+
+### Testing
