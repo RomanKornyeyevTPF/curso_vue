@@ -20,7 +20,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const { counter, squareCounter } = useCounter(props.value);
+const { counter, squareCounter } = useCounter(10);
 // ------- FIN COMPOSABLE --------
 </script>
 

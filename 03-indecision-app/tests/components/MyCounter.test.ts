@@ -1,9 +1,15 @@
-// import { describe, test } from 'vitest';
-// import MyCounter from '../../src/components/MyCounter.vue';
+import { describe, test } from 'vitest';
+import { mount } from '@vue/test-utils';
+import MyCounter from '../../src/components/MyCounter.vue';
 
-// describe('<MyCounter />', () => {
+describe('<MyCounter />', () => {
+  test('should match snapshot', () => {
 
-//   test('should match snapshot', () => {
-//     MyCounter
-//   });
-// });
+    const wrapper = mount(MyCounter, {
+      props: { value: 10 }
+    });
+
+    console.log(wrapper.html());
+
+  });
+});
