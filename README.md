@@ -1,4 +1,28 @@
 # Notas y apuntes
+
+## ERRORES GLOBALES (GENERAL)
+### rollup (vue-node-npm)
+En proyectos nuevos de Vue, las versiones recientes de Rollup pueden priorizar binarios precompilados en lugar del fallback JS, lo que a veces activa el antivirus (especialmente en entornos corporativos donde no se puede añadir excepciones).
+
+Se pueden aplicar varias soluciones:
+
+1. **Usar versiones anteriores estables (FUNCIONA)** 
+
+    Ejecutar en el proyecto:  
+    ```shell
+    npm install -D vite@7.1.2 rollup@4.46.2
+    ```
+    Esta versión reciente (a fecha 21/08/2025 es casi la última) prioriza el fallback JS y evita problemas con el antivirus.
+
+2. **Forzar fallback JS (NO PROBADA)**
+
+    Ejecutar en PowerShell o CMD:
+    ```shell
+    set ROLLUP_SKIP_NODEJS_NATIVE=true
+    ```
+    Esto afecta solo a la sesión actual de terminal y fuerza a Rollup a usar JS en lugar de binarios.
+
+
 ## JS / TS
 ### Generales
 #### const / let / var
