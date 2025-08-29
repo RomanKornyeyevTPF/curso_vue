@@ -7,6 +7,10 @@
 
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    // código añadido para poder usar métodos modernos como '.at' en strings y arrays
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"]
   }
 }

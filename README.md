@@ -30,6 +30,72 @@ Se pueden aplicar varias soluciones:
 - let: usar solo si tenemos claro que se va a cambiar el valor después
 - const: usar prioritariamente const para evitar problemas con posibles mutaciones en imports. Ante la duda usar siempre const y cambiar a var si es necesario.
 
+#### Imports
+En TypeScript, `import` se usa para cosas que existen en tiempo de ejecución (clases, enums, funciones, objetos), es decir, cosas que existen en js.  
+`import type` se usa solo para tipos (`interface`, `type`), que desaparecen al compilar a JavaScript. Son cosas que no existen como tal en js.
+
+Cuando importamos un paquete de una librería que tenga icono de DT, seguramente al instalarlo, tengamos que ejecutar un comando más. Ejemplo: `canvas confetti`.
+
+```shell
+npm i canvas-confetti
+```
+
+Al importarlo, saldrá este error, por algo de TS y compilación:
+
+```js
+import confetti from 'canvas-confetti'; 
+// Could not find a declaration file for module 'canvas-confetti'. 'c:/Users/roman.kornyeyev/Downloads/curso_vue/curso_vue/04-pokemon-game/node_modules/canvas-confetti/src/confetti.js' implicitly has an 'any' type.
+// Try `npm i --save-dev @types/canvas-confetti` if it exists or add a new declaration (.d.ts) file containing `declare module 'canvas-confetti';`
+```
+
+En estos casos ejecutamos el comando que nos sugiere:
+
+```shell
+npm i --save-dev @types/canvas-confetti
+```
+
+#### ES2022 / métodos modernos (ej: '.at')
+métodos modernos como `.at()` (para arrays y strings) no existen en ES2019/ES2020 porque se introdujeron en **ES2022**. Solo en ES2022+ los arrays y strings soportan este método nativamente. Para ello deberemos poner en nuestro `ts.config.app.json` lo siguiente:
+
+```json
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "exclude": ["src/**/__tests__/*"],
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    // código añadido para poder usar métodos modernos como '.at' en strings y arrays
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"]
+  }
+}
+```
+
+Debido a que la versión de 2019 no tiene
+
+#### Alias
+
+En JS / TS existen alias a la hora de importar un objeto desestructurado. Digamos que tenemos varios objetos que se llaman de una forma muy similar:
+
+```js
+import PokemonOptions from '../components/PokemonOptions.vue';
+const { pokemonOptions } = usePokemonGame();
+```
+
+JS es case sensitive y distingue las 2 variables. Pero esto nos puede generar ruido visual y confusiones. Para evitar esto, podemos usar los alias:
+
+```js
+const { pokemonOptions:options } = usePokemonGame();
+```
+
+Y ahora nuestra variable pasaría a llamarse `options`. Esto puede ayudar a evitar confusiones.
+
+
 ### Arrays/objetos
 #### Mutabilidad
 Cuando trabajamos con arrays y queremos duplicar un array, debemos hacer el spread [...variable]:
@@ -283,19 +349,34 @@ O bien, todos los `@apply` deberán ir en el `style.css` general (donde está el
 
 ### Aclaraciones
 
-#### 1
-Normalmente en script (ts) ponemos `nombreConstante.value`. Pero en el template (HTML) no es necesario. Vue desenvuelve los valores por defecto, por lo que podemos acceder a ellos con `{{nombreConstante}}` (sin el .value).
+#### 1 - Props, nomenclaturas
+Normalmente en script (ts) ponemos `nombreConstante.value`. Pero en el template (HTML) no es necesario. Vue desenvuelve los valores por defecto, por lo que podemos acceder a ellos con `{{nombreConstante}}` (sin el .value). En este caso sería para printearlos.
 
-#### 2
-El atributo setup en `<script lang="ts" setup>` indica que el componente Vue usa la Composition API (lo moderno) con sintaxis simplificada. Permite declarar variables, funciones y composables directamente en el script, haciéndolos accesibles en el template sin necesidad de retornar explícitamente. Facilita la organización y reutilización de lógica en componentes Vue 3.
-
-#### 3
-##### Props en Vue: camelCase vs kebab-case
-
-En Vue, los **props se definen en `camelCase` en el componente hijo**,  
+También a la hora de bindearlos: los **props se definen en `camelCase` en el componente padre/hijo**,  
 pero en los **templates se pasan normalmente en `kebab-case`** (convención común).
 
-Vue hace la conversión automáticamente, por lo que ambos funcionan.
+Es decir:
+
+```html
+<!-- Llamada al componente hijo desde el padre -->
+<PokemonOptions
+  ...
+  :selected-answer="..."
+/>
+```
+
+```js
+// Componente hijo (js)
+interface Props {
+  ...
+  selectedAnswer: number | null;
+}
+```
+
+Vue hace la conversión automáticamente, por lo que ambos funcionan. Esto es una convención común.
+
+#### 2 Script setup, composition API
+El atributo setup en `<script lang="ts" setup>` indica que el componente Vue usa la Composition API (lo moderno) con sintaxis simplificada. Permite declarar variables, funciones y composables directamente en el script, haciéndolos accesibles en el template sin necesidad de retornar explícitamente. Facilita la organización y reutilización de lógica en componentes Vue 3.
 
 ```html
 <!-- Componente padre -->
@@ -311,6 +392,17 @@ defineProps<{
 }>()
 </script>
 ```
+
+#### 3 Instalación tailwind
+A la hora de instalar tailwind, no nos sale la opción para instalarlo en vue. Seguimos los pasos para instalarlo con vite, ya que vue está basado en vite o algo así.
+A día de hoy el comando para instalar tailwind es:
+
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+> **Nota:**
+> Pero puede cambiar en un futuro, es recomendable consultar la página oficial de tailwind.
 
 ### Atajos
 
