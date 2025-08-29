@@ -14,15 +14,15 @@ export const usePokemonGame = () => {
   const correctAnswers = ref(0);
   const wrongAnswers = ref(0);
 
-  const porcentajeCorrectAnswers = computed(() => {
-      const total = correctAnswers.value + wrongAnswers.value;
-      return total === 0 ? 0 : ((correctAnswers.value / total) * 100).toFixed(2);
-  });
+  // const porcentajeCorrectAnswers = computed(() => {
+  //     const total = correctAnswers.value + wrongAnswers.value;
+  //     return total === 0 ? 0 : ((correctAnswers.value / total) * 100).toFixed(2);
+  // });
 
-  const porcentajeWrongAnswers = computed(() => {
-    const total = correctAnswers.value + wrongAnswers.value;
-    return total === 0 ? 0 : ((wrongAnswers.value / total) * 100).toFixed(2);
-  });
+  // const porcentajeWrongAnswers = computed(() => {
+  //   const total = correctAnswers.value + wrongAnswers.value;
+  //   return total === 0 ? 0 : ((wrongAnswers.value / total) * 100).toFixed(2);
+  // });
 
   // obtener un pokemon aleatorio de las opciones
   const randomPokemon = computed (() => {
@@ -103,9 +103,9 @@ export const usePokemonGame = () => {
     randomPokemon,
     selectedAnswer,
     correctAnswers,
-    porcentajeCorrectAnswers,
+    // porcentajeCorrectAnswers,
     wrongAnswers,
-    porcentajeWrongAnswers,
+    // porcentajeWrongAnswers,
     
 
     // Methods

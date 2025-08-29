@@ -1,5 +1,5 @@
 <template>
-  <section class="mt-5 flex flex-col">
+  <section class="mt-5 grid grid-cols-2 gap-2">
     <button
       v-for="{name, id} in options"
       :key="id"

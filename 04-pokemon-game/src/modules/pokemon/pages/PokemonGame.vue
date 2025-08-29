@@ -43,30 +43,23 @@
       @selected-option="handleSelectedAnswer"
     />
 
-    <section class="mt-8 flex flex-col items-center space-y-2">
-      <div class="flex items-center space-x-3">
-        <span class="text-green-600 font-semibold bg-green-100 px-3 py-1 rounded-full shadow">
-          ✅ Correctas: {{ correctAnswers }} ({{ porcentajeCorrectAnswers }}%)
-        </span>
-      </div>
-      <div class="flex items-center space-x-3">
-        <span class="text-red-600 font-semibold bg-red-100 px-3 py-1 rounded-full shadow">
-          ❌ Incorrectas: {{ wrongAnswers }} ({{ porcentajeWrongAnswers }}%)
-        </span>
-      </div>
-    </section>
-    
+    <!-- Pokemon stats -->
+    <PokemonStats
+      :correct-answers="correctAnswers"
+      :wrong-answers="wrongAnswers"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import PokemonOptions from '../components/PokemonOptions.vue';
 import PokemonPicture from '../components/PokemonPicture.vue';
+import PokemonStats from '../components/PokemonStats.vue';
 import { usePokemonGame } from '../composables/usePokemonsGame';
 import { GameStatus } from '../interfaces';
 
 // :options es un alias para pokemonOptions
-const {correctAnswers, porcentajeCorrectAnswers, wrongAnswers, porcentajeWrongAnswers, randomPokemon, isLoading, gameStatus, pokemonOptions:options, selectedAnswer, handleSelectedAnswer, getNextRound } = usePokemonGame();
+const {correctAnswers, wrongAnswers, randomPokemon, isLoading, gameStatus, pokemonOptions:options, selectedAnswer, handleSelectedAnswer, getNextRound } = usePokemonGame();
 
 </script>
 

@@ -375,6 +375,59 @@ interface Props {
 
 Vue hace la conversión automáticamente, por lo que ambos funcionan. Esto es una convención común.
 
+OTRO PUNTO a aclarar es en cómo se reciben los props y cómo se pueden usar. Por ejemplo, si se reciben así:
+
+```js
+defineProps<Props>();
+```
+
+Aquí no guardas props en una constante, pero Vue hace un truco en `<script setup>`:
+Los props que defines se “inyectan” directamente como variables reactivas en el template. Por eso puedes hacer:
+
+```html
+<Elemento
+  ...
+  v-for="{name, id} in options"
+  :disabled="blockSelection === true"
+/>
+```
+
+Y funciona, porque Vue expone automáticamente options, blockSelection, correctAnswer, selectedAnswer al template.
+
+Pero en el `<script setup>` no los puedes usar directamente en código de JS.
+Por ejemplo, si ahí intentaras:
+
+```js
+console.log(options.length);
+```
+
+Te daría error, porque fuera del template no están definidas.
+
+En tu PokemonStats.vue<br>
+Aquí necesitas usar los props en código JS (computed).
+Cuando haces cálculos, Vue no te expone las props “mágicamente”, tienes que obtenerlas:
+
+```js
+const props = defineProps<Props>();
+
+const porcentajeCorrectAnswers = computed(() => {
+  const total = props.correctAnswers + props.wrongAnswers;
+  return total === 0 ? '0.00' : ((props.correctAnswers / total) * 100).toFixed(2);
+});
+```
+
+Resumen:
+
+Template: puedes usar los nombres de props directamente sin props. gracias a la magia de `<script setup>`.
+
+Script (JS/TS): si quieres usarlos en código (computed, funciones, watchers, etc.), necesitas capturarlos en una variable con `const props = defineProps<Props>()`.
+
+Dicho de otro modo:
+
+En PokemonOptions no te dio problema porque solo los usaste en el template.
+
+En PokemonStats sí lo necesitas porque los estás usando en código JavaScript dentro del `<script>`.
+
 #### 2 Script setup, composition API
 El atributo setup en `<script lang="ts" setup>` indica que el componente Vue usa la Composition API (lo moderno) con sintaxis simplificada. Permite declarar variables, funciones y composables directamente en el script, haciéndolos accesibles en el template sin necesidad de retornar explícitamente. Facilita la organización y reutilización de lógica en componentes Vue 3.
 
