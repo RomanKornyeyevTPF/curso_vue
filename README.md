@@ -784,4 +784,206 @@ El padre escucha ese evento con @send-message="miFuncion", y ahí es donde se ej
 > 2. Ejecuta la función correspondiente (ej: hacer `push` en un array).
 > 3. Como el array es **reactivo**, la vista se actualiza automáticamente (ej: la lista de mensajes).
 
+### Router
+
+#### Carga perezosa (lazy load)
+
+Tras instalar el router nos hace falta modificar el main.ts:
+
+```ts
+...
+import router from './router'
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
+```
+
+Con esto el router ya es parte global de la aplicación.
+
+Al cambiar de ruta en el router de vue, existe una carga perezosa (los componentes se cargan solo cuando son necesarios). Aquí hay un ejemplo de las dos formas, en el archivo `src/router/index.ts`:
+
+```js
+import HomePage from "@/modules/landing/pages/HomePage.vue";
+import { createRouter, createWebHashHistory } from "vue-router";
+
+const router = createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: "/",
+      name: "home",
+      // Eager-loaded (not lazy, always in the bundle)
+      component: HomePage,
+    },
+    {
+      path: "/features",
+      name: "features",
+      // Lazy-loaded
+      component: () => import("@/modules/landing/pages/FeaturesPage.vue"),
+    },
+  ],
+});
+
+export default router;
+```
+
+#### Diferencia entre createWebHashHistory y createWebHistory
+
+- **`createWebHashHistory`**  
+  - URL: `/#/ruta`  
+  - Pros: Funciona en cualquier servidor  
+  - Contras: URL con `#`, menos limpia
+
+- **`createWebHistory`**  
+  - URL: `/ruta`  
+  - Pros: URLs limpias y amigables  
+  - Contras: Requiere configuración del servidor para redirigir todas las rutas a `index.html`
+
+#### Rutas Padres vs Rutas Hijas
+
+En Vue Router, las rutas pueden ser **padres** o **hijas**:
+
+- **Rutas padres**:
+  - Definen un layout o contenedor común.
+  - Pueden tener **children**, que son las rutas hijas.
+  - Ejemplo:  
+    ```js
+    {
+      path: "/",
+      name: "landing",
+      component: LandingLayout, // Layout principal
+      children: [ ... ]
+    }
+    ```
+
+- **Rutas hijas**:
+  - Se renderizan dentro del `<router-view>` del padre.
+  - Su path se concatena con el path del padre.
+  - Pueden ser lazy-loaded o eager-loaded.
+  - Ejemplo:
+    ```js
+    {
+      path: "/features",
+      name: "features",
+      component: () => import("FeaturesPage.vue") // Lazy-loaded
+    }
+    ```
+
+**Nota:**  
+- Si el padre tiene `path: "/"` y un hijo tiene `path: "/features"`, la ruta completa será `/features`.
+- Los hijos heredan la estructura del layout del padre.
+
+#### Redirecciones, 404, Login, bloqueo de retroceso.
+
+##### Not found 404
+
+Cuando nuestro usuario salta a una ruta que no existe, debe saltar una excepción 404 y llevarlo a una página que le diga
+que esa ruta no existe y que tenga un botón de volver a inicio (una típica view 404).
+Para esto nos serviría el siguiente código dentro de nuestras rutas:
+
+```js
+// Not found 404
+{
+  path: '/:pathMatch(.*)*', // Cualquier ruta que no coincida con las anteriores
+  name: 'NotFound',
+  component: NotFound404, // Edger-loaded (not lazy, always in the bundle)
+},
+```
+
+En este caso nos puede interesar tener la 404 siempre cargada, ya que es una situación relativamente común que puede saltar en cualquier momento. Pero se puede poner como lazy loaded también.
+
+Al saltar la 404 y darle al botón "volver al inicio", no nos interesa que el usuario pueda retroceder a la misma 404. Por lo tanto, tenemos que "bloquear" esa ruta para prevenir que se pueda retroceder a la misma. Esto se puede hacer mismamente en el template con un `RouterLink`:
+
+```html
+<!-- replace es para que no pueda volver atrás (al 404) -->
+<RouterLink
+  replace
+  class="..."
+  :to="{ name: 'home' }"
+>
+  Back to homepage
+</RouterLink>
+```
+
+##### Login y redirect
+
+Nos pasa un poco lo mismo en el login. Una vez que el user ha hecho inicio de sesión correcto nos interesa redirigirle a una página privada (inicio, perfil, etc.), pero no nos interesa que pueda retroceder al mismo login. Esto se puede bloquear también.
+
+En el script del componente o en el composable, se puede manejar esto con vue router de la siguiente forma
+
+```html
+<script lang="ts" setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const onLogin = () => {
+  router.replace({ name: 'home' }); // con replace evitamos que pueda volver al login
+};
+</script>
+```
+
+#### Protección de rutas
+
+Podemos hacer la típica protección de rutas bajo logueado. Dentro de nuestro router pondríamos lo siguiente:
+
+```js
+{
+  path: '/pokemon/:id',
+  name: 'pokemon',
+  beforeEnter: [ isAuthenticatedGuard ], // protegemos la ruta
+  props: ( route ) => {
+    const id = Number( route.params.id );
+
+    return isNaN( id ) ? { id: 1 } : { id };
+  },
+  component: () => import('@/modules/pokemons/pages/PokemonPage.vue'),
+}
+```
+
+Esto llama a un guard que habremos importado en el script. Este guardia hará unas comprobaciones antes de permitir el acceso. En este caso es un local storage para el ejemplo pero será un `jwt` en un futuro. Adicionalmente guardamos la ruta anterior para redirigir al user al loguearse.
+Cuando haya un backend contra el que autentificarse, la función se podrá poner como `async`.
+
+```js
+import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
+
+const isAuthenticatedGuard = async (
+  to:RouteLocationNormalized,
+  from:RouteLocationNormalized,
+  next:NavigationGuardNext
+) => {
+  const userId = localStorage.getItem('userId');
+  localStorage.setItem('lastPath', to.path); // guardo la última ruta a la que ha intentado acceder
+
+  if (!userId) {
+    return next({ name: 'login' });
+  }
+
+  return next();
+}
+
+export default isAuthenticatedGuard;
+```
+
+Esto sería un ejemplo de llamada desde el login:
+
+```html
+<script lang="ts" setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const onLogin = () => {
+  localStorage.setItem('userId', 'ABC-123');
+
+  const lastPath = localStorage.getItem('lastPath') ?? '/';
+
+  router.replace(lastPath);
+};
+</script>
+```
+
+
 ### Testing
+XD
