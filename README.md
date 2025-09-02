@@ -984,6 +984,38 @@ const onLogin = () => {
 </script>
 ```
 
+### Ciclo de vida de los componentes
+
+Los componentes de vue tienen un ciclo de vida. Este ciclo de vida tiene distintas etapas, (ej: onMounted()). Esto se puede ver en la documentación oficial: `https://vuejs.org/api/composition-api-lifecycle.html`
+
+### Keep alive
+
+Para mantener con vida distintos componentes o vistas (todos los componentes de una vista) se puede usar keepalive. Por ejemplo, para un contador. Así sería para todos los componentes dentro de un layout:
+
+```html
+<router-view v-slot="{ Component }">
+  <keep-alive>
+    <component :is="Component" />
+  </keep-alive>
+</router-view>
+```
+
+Y así para un componente suelto:
+
+```html
+<!-- Inactive components will be cached! -->
+<KeepAlive>
+  <component :is="activeComponent" />
+</KeepAlive>
+```
+
+> **NOTA IMPROTANTE**<br>
+> Cuando hacemos keepalive de un componente, no estamos desmontándolo. Estamos desactivándolo. Por tanto, el `onMounted()` nos servirá para la primera vez que se monta ese componente. Para las posteriores se debería utilizar `onActivated()`.
+
+
+### Router link active
+
+
 
 ### Testing
 XD
