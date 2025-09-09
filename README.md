@@ -1,36 +1,45 @@
 # Notas y apuntes
 
 ## ERRORES GLOBALES (GENERAL)
+
 ### rollup (vue-node-npm)
+
 En proyectos nuevos de Vue, las versiones recientes de Rollup pueden priorizar binarios precompilados en lugar del fallback JS, lo que a veces activa el antivirus (especialmente en entornos corporativos donde no se puede añadir excepciones).
 
 Se pueden aplicar varias soluciones:
 
-1. **Usar versiones anteriores estables (FUNCIONA)** 
+1. **Usar versiones anteriores estables (FUNCIONA)**
 
-    Ejecutar en el proyecto:  
-    ```shell
-    npm install -D vite@7.1.2 rollup@4.46.2
-    ```
-    Esta versión reciente (a fecha 21/08/2025 es casi la última) prioriza el fallback JS y evita problemas con el antivirus.
+   Ejecutar en el proyecto:
+
+   ```shell
+   npm install -D vite@7.1.2 rollup@4.46.2
+   ```
+
+   Esta versión reciente (a fecha 21/08/2025 es casi la última) prioriza el fallback JS y evita problemas con el antivirus.
 
 2. **Forzar fallback JS (NO PROBADA)**
 
-    Ejecutar en PowerShell o CMD:
-    ```shell
-    set ROLLUP_SKIP_NODEJS_NATIVE=true
-    ```
-    Esto afecta solo a la sesión actual de terminal y fuerza a Rollup a usar JS en lugar de binarios.
+   Ejecutar en PowerShell o CMD:
 
+   ```shell
+   set ROLLUP_SKIP_NODEJS_NATIVE=true
+   ```
+
+   Esto afecta solo a la sesión actual de terminal y fuerza a Rollup a usar JS en lugar de binarios.
 
 ## JS / TS
+
 ### Generales
+
 #### const / let / var
+
 - var: no usar, es antiguo
 - let: usar solo si tenemos claro que se va a cambiar el valor después
 - const: usar prioritariamente const para evitar problemas con posibles mutaciones en imports. Ante la duda usar siempre const y cambiar a var si es necesario.
 
 #### Imports
+
 En TypeScript, `import` se usa para cosas que existen en tiempo de ejecución (clases, enums, funciones, objetos), es decir, cosas que existen en js.  
 `import type` se usa solo para tipos (`interface`, `type`), que desaparecen al compilar a JavaScript. Son cosas que no existen como tal en js.
 
@@ -43,7 +52,7 @@ npm i canvas-confetti
 Al importarlo, saldrá este error, por algo de TS y compilación:
 
 ```js
-import confetti from 'canvas-confetti'; 
+import confetti from "canvas-confetti";
 // Could not find a declaration file for module 'canvas-confetti'. 'c:/Users/roman.kornyeyev/Downloads/curso_vue/curso_vue/04-pokemon-game/node_modules/canvas-confetti/src/confetti.js' implicitly has an 'any' type.
 // Try `npm i --save-dev @types/canvas-confetti` if it exists or add a new declaration (.d.ts) file containing `declare module 'canvas-confetti';`
 ```
@@ -55,6 +64,7 @@ npm i --save-dev @types/canvas-confetti
 ```
 
 #### ES2022 / métodos modernos (ej: '.at')
+
 métodos modernos como `.at()` (para arrays y strings) no existen en ES2019/ES2020 porque se introdujeron en **ES2022**. Solo en ES2022+ los arrays y strings soportan este método nativamente. Para ello deberemos poner en nuestro `ts.config.app.json` lo siguiente:
 
 ```json
@@ -83,21 +93,22 @@ Debido a que la versión de 2019 no tiene
 En JS / TS existen alias a la hora de importar un objeto desestructurado. Digamos que tenemos varios objetos que se llaman de una forma muy similar:
 
 ```js
-import PokemonOptions from '../components/PokemonOptions.vue';
+import PokemonOptions from "../components/PokemonOptions.vue";
 const { pokemonOptions } = usePokemonGame();
 ```
 
 JS es case sensitive y distingue las 2 variables. Pero esto nos puede generar ruido visual y confusiones. Para evitar esto, podemos usar los alias:
 
 ```js
-const { pokemonOptions:options } = usePokemonGame();
+const { pokemonOptions: options } = usePokemonGame();
 ```
 
 Y ahora nuestra variable pasaría a llamarse `options`. Esto puede ayudar a evitar confusiones.
 
-
 ### Arrays/objetos
+
 #### Mutabilidad
+
 Cuando trabajamos con arrays y queremos duplicar un array, debemos hacer el spread [...variable]:
 
 ```js
@@ -113,17 +124,19 @@ console.log({ numberArray, numberArray2 });
 Si lo hiciesemos igualándolo (`const numberArray2 = numberArray;`), tendriamos el problema de que se nos mutaría el array original, debido a que los arrays se pasan como referencia. Hay que evitar hacer código mutable.
 
 #### Tipado
+
 TS se traspila posteriormente a JS. Por lo que tener un array de varios tipos de datos es posible (pero no siempre lo deseado o lo óptimo). En el ejemplo tenemos un array de números y le añadimos un string:
 
 ```js
 const numberArray = [1, 2, 3, 4, 5];
-numberArray2.push('7');
+numberArray2.push("7");
 ```
 
 Esto arroja un array con todos los números y el último dato como string. Para evitar esto metemos un tipado como en cualquier otro lenguaje de tipado fuerte, pero con una sintáxisis un poco trambólica y se puede combinar perfectamente con spread y demás:
 
 ```js
-[1, 2, 3, 4, 5];const numberArray2: (number|string)[] = [...numberArray];
+[1, 2, 3, 4, 5];
+const numberArray2: (number | string)[] = [...numberArray];
 ```
 
 ### Funciones
@@ -165,7 +178,7 @@ function greetPerson(name: string) {
 
 const greetPerson = (name: string) => {
   return `Hello, ${name}!`;
-}
+};
 ```
 
 Si el cuerpo de la función es solamente un return corto, podemos hacer esto y funciona exactamente igual, acortando la sintáxis:
@@ -180,7 +193,7 @@ Para retornar objetos / arrays, el return se indica con paréntesis `({})`:
 const getUser = () => ({
   uid: "ABC-123",
   username: "Roman001",
-})
+});
 ```
 
 #### Undefined
@@ -191,12 +204,12 @@ Los objetos en ts pueden tener valores undefined, por ejemplo, aquí vemos como 
 const heroes = [
   {
     id: 1,
-    name: 'Batman',
+    name: "Batman",
   },
   {
     id: 2,
-    name: 'Superman',
-    power: 'Super fuerza',
+    name: "Superman",
+    power: "Super fuerza",
   },
 ];
 ```
@@ -204,7 +217,7 @@ const heroes = [
 Si posteriormente queremos buscar un objeto por el id (por ejemplo), podemos usar una función nativa de js `find`:
 
 ```js
-const hero = heroes.find( (h) => h.id === 1 );
+const hero = heroes.find((h) => h.id === 1);
 ```
 
 IMPORTANTE: tenemos que tener ojo con donde lo pintamos o donde lo metemos. Ya que a veces puede dar nulos. Para esto usaríamos un indicador para decir que podríamos recibir undefined `?`:
@@ -223,16 +236,16 @@ Se puede desestructurar un objeto para acceder únicamente a los valores que nos
 
 ```js
 export const person = {
-  name: 'Tony',
+  name: "Tony",
   age: 45,
-  codeName: 'Ironman',
-}
+  codeName: "Ironman",
+};
 ```
 
 Se desestructuraría así:
 
 ```js
-const { age, name, power = 'No tiene poder' } = person;
+const { age, name, power = "No tiene poder" } = person;
 ```
 
 Como vemos aquí añadimos un valor opcional que no siempre va a aparecer (power), pero esto luego da errores de compilación. Una forma de solucionarlo es haciendo una interfaz:
@@ -250,12 +263,12 @@ La cual aplicamos en el objeto y ya funcionaría todo:
 
 ```js
 export const person: Hero = {
-  name: 'Tony',
+  name: "Tony",
   age: 45,
-  codeName: 'Ironman',
-}
+  codeName: "Ironman",
+};
 
-const { age, name, power = 'No tiene poder' } = person;
+const { age, name, power = "No tiene poder" } = person;
 console.log({ age, name });
 ```
 
@@ -269,15 +282,15 @@ interface CreateHeroArgs {
   power?: string; // Propiedad opcional
 }
 
-const createHero = ({name, age, codeName, power}: CreateHeroArgs) => ({
+const createHero = ({ name, age, codeName, power }: CreateHeroArgs) => ({
   id: 123,
   name: name,
   age: age,
   codeName: codeName,
-  power: power ?? 'No tiene poder',
-})
+  power: power ?? "No tiene poder",
+});
 
-console.log( createHero( person ));
+console.log(createHero(person));
 ```
 
 ### Importaciones / exportaciones
@@ -285,13 +298,13 @@ console.log( createHero( person ));
 Cuando tu haces una importación normal en js, normalmente te importa lo que se exporta por default en el módulo que estés importando:
 
 ```js
-import cualquierCosaDefault from '../data/heroes';
+import cualquierCosaDefault from "../data/heroes";
 ```
 
 Normalmente conviene poner el mismo nombre que el default que se exporta. También se pueden hacer importaciones mixtas, default + desestructuración:
 
 ```js
-import heroes, { owners } from '../data/heroes';
+import heroes, { owners } from "../data/heroes";
 ```
 
 <hr>
@@ -318,22 +331,24 @@ Esto nos genera una interfaz completa en base al JSON, puede contener errores, p
 ### --- ERRORES ---
 
 #### ERROR TAILWIND DIRECTIVA @APPLY
+
 Al instalar tailwind, al contrario de lo que se muestra en el vídeo (tailwind 3), nosotros estaremos usando tailwind 4. Por lo que cambian algunas cosas. Entonces, si queremos usar `@apply` entre otros, por ejemplo en un componente:
 
 ```html
 <style scoped>
-  .btn{
+  .btn {
     @apply bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded;
   }
 </style>
 ```
+
 Nos dará error, por lo que se deberá hacer un `@reference` a la hoja principal de css (donde está el import) desde el propio componente. Y adicionalmente nos interesará meter un atributo `scoped` en el `<style>`, para que estos estilos se apliquen solamente a este componente. quedando así:
 
 ```html
 <style scoped>
   @reference "../style.css";
 
-  .btn{
+  .btn {
     @apply bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded;
   }
 </style>
@@ -341,15 +356,12 @@ Nos dará error, por lo que se deberá hacer un `@reference` a la hoja principal
 
 O bien, todos los `@apply` deberán ir en el `style.css` general (donde está el `@import "tailwindcss";`).
 
-
-
-
-
 ### --- FIN ERRORES ---
 
 ### Aclaraciones
 
 #### 1 - Props, nomenclaturas
+
 Normalmente en script (ts) ponemos `nombreConstante.value`. Pero en el template (HTML) no es necesario. Vue desenvuelve los valores por defecto, por lo que podemos acceder a ellos con `{{nombreConstante}}` (sin el .value). En este caso sería para printearlos.
 
 También a la hora de bindearlos: los **props se definen en `camelCase` en el componente padre/hijo**,  
@@ -359,10 +371,7 @@ Es decir:
 
 ```html
 <!-- Llamada al componente hijo desde el padre -->
-<PokemonOptions
-  ...
-  :selected-answer="..."
-/>
+<PokemonOptions ... :selected-answer="..." />
 ```
 
 ```js
@@ -429,6 +438,7 @@ En PokemonOptions no te dio problema porque solo los usaste en el template.
 En PokemonStats sí lo necesitas porque los estás usando en código JavaScript dentro del `<script>`.
 
 #### 2 Script setup, composition API
+
 El atributo setup en `<script lang="ts" setup>` indica que el componente Vue usa la Composition API (lo moderno) con sintaxis simplificada. Permite declarar variables, funciones y composables directamente en el script, haciéndolos accesibles en el template sin necesidad de retornar explícitamente. Facilita la organización y reutilización de lógica en componentes Vue 3.
 
 ```html
@@ -439,14 +449,15 @@ El atributo setup en `<script lang="ts" setup>` indica que el componente Vue usa
 ```html
 <!-- Componente hijo -->
 <script setup lang="ts">
-defineProps<{
-  itsMine: boolean
-  message: string
-}>()
+  defineProps<{
+    itsMine: boolean;
+    message: string;
+  }>();
 </script>
 ```
 
 #### 3 Instalación tailwind
+
 A la hora de instalar tailwind, no nos sale la opción para instalarlo en vue. Seguimos los pasos para instalarlo con vite, ya que vue está basado en vite o algo así.
 A día de hoy el comando para instalar tailwind es:
 
@@ -479,17 +490,17 @@ const app = createApp({
   `,
 
   setup() {
-    const message = ref('Hola Vue.js!');
+    const message = ref("Hola Vue.js!");
 
-    setTimeout(()=>{
-      message.value = 'El mensaje ha cambiado!';
-    }, 1500)
-    
+    setTimeout(() => {
+      message.value = "El mensaje ha cambiado!";
+    }, 1500);
+
     return { message };
-  }
+  },
 });
 
-app.mount('#myApp');
+app.mount("#myApp");
 ```
 
 #### Bindeos (v-bind)
@@ -506,7 +517,9 @@ Su forma abreviada es `:`.
 ```
 
 ### Estilos
+
 #### General
+
 Cuando hacemos un componente SFC (Single File Component), podemos poner un bloque estilo que solamente afecte a ese componente, con el atributo scoped:
 
 ```html
@@ -515,11 +528,13 @@ Cuando hacemos un componente SFC (Single File Component), podemos poner un bloqu
 </template>
 
 <script lang="ts" setup>
-  console.log( "hola mundo" )
+  console.log("hola mundo");
 </script>
 
 <style scoped>
-  h1{color: green;}
+  h1 {
+    color: green;
+  }
 </style>
 ```
 
@@ -528,80 +543,82 @@ El color se está aplicando a todos los H1, pero como el `<style>` tiene scoped,
 <hr>
 
 ### Reactividad, setup, defineComponents (IMP)
+
 #### 3 Setup y defineComponent (IMP)
+
 Para crear reactividad en un componente o script (ej: ref, etc.) se usa "setup" ¿Qué es? En Vue 3, la Composition API introduce la función setup() ¿Qué es? Es un método, este método es el punto de entrada donde declaras props, reactividad, computed, métodos, composables, etc.
 
 Y se puede hacer de 2 maneras:
 
 1. `<script setup>` (forma moderna):
 
-    ```html
-    <template> 
-      <section class="container mt-5">
-        <h3>counter {{ counter }}</h3>
-        <h3>square: {{ squareCounter }}</h3>
+   ```html
+   <template>
+     <section class="container mt-5">
+       <h3>counter {{ counter }}</h3>
+       <h3>square: {{ squareCounter }}</h3>
 
-        <div>
-          <button @click="counter++" class="btn">+1</button>
-          <button @click="counter--" class="btn">-1</button>
-        </div>
-      </section>
-    </template>
+       <div>
+         <button @click="counter++" class="btn">+1</button>
+         <button @click="counter--" class="btn">-1</button>
+       </div>
+     </section>
+   </template>
 
-    <script lang="ts" setup>
-    import { useCounter } from '../composables/useCounter';
+   <script lang="ts" setup>
+     import { useCounter } from "../composables/useCounter";
 
-    interface Props {
-      value: number;
-    }
+     interface Props {
+       value: number;
+     }
 
-    const props = defineProps<Props>();
-    const { counter, squareCounter } = useCounter(props.value);
-    </script>
-    ```
+     const props = defineProps<Props>();
+     const { counter, squareCounter } = useCounter(props.value);
+   </script>
+   ```
 
-    - No se necesita export default ni definir explícitamente setup().
+   - No se necesita export default ni definir explícitamente setup().
 
-    - Todo lo que declares dentro del bloque ya está disponible en el template.
+   - Todo lo que declares dentro del bloque ya está disponible en el template.
 
-    - Ideal para proyectos nuevos: sintaxis más limpia y directa.
+   - Ideal para proyectos nuevos: sintaxis más limpia y directa.
 
-    - defineProps y defineEmits se usan directamente para props y eventos.
+   - defineProps y defineEmits se usan directamente para props y eventos.
 
 2. `setup()` dentro de defineComponent (forma clásica):
 
-    ```html
-    <script lang="ts">
-    import { defineComponent } from 'vue';
-    import { useCounter } from '../composables/useCounter';
+   ```html
+   <script lang="ts">
+     import { defineComponent } from "vue";
+     import { useCounter } from "../composables/useCounter";
 
-    export default defineComponent({
-      props: {
-        value: { type: Number, required: true }
-      },
-      setup(props) {
-        const { counter, squareCounter } = useCounter(props.value);
-        return { counter, squareCounter };
-      }
-    });
-    </script>
-    ```
+     export default defineComponent({
+       props: {
+         value: { type: Number, required: true },
+       },
+       setup(props) {
+         const { counter, squareCounter } = useCounter(props.value);
+         return { counter, squareCounter };
+       },
+     });
+   </script>
+   ```
 
-    - Requiere export default defineComponent({...}).
+   - Requiere export default defineComponent({...}).
 
-    - `setup(props)` se define explícitamente y se debe hacer return de todo lo que se quiere usar en el template.
+   - `setup(props)` se define explícitamente y se debe hacer return de todo lo que se quiere usar en el template.
 
-    - Más verboso, pero compatible con opciones clásicas de Vue.
-
+   - Más verboso, pero compatible con opciones clásicas de Vue.
 
 > **Nota:**  
 > Solo se puede utilizar un setup por componente. NO PUEDEN HABER VARIOS.
 
 <hr>
 
-### v-*, eventos
+### v-\*, eventos
 
 #### v-on
+
 Sirve para **escuchar eventos** en elementos del DOM.  
 Sintaxis completa: `v-on:evento="funcion"`  
 Sintaxis abreviada: `@evento="funcion"`
@@ -612,37 +629,85 @@ Sintaxis abreviada: `@evento="funcion"`
 ```
 
 #### v-show
+
 Sirve para mostrar u ocultar un elemento mediante display: none.
 El elemento sigue presente en el DOM, solo cambia su visibilidad.
 
 ```html
 <p v-show="visible">Esto se ve solo si visible es true</p>
 ```
+
 - true → se muestra
 - false → display: none
 
 #### v-if
+
 Sirve para renderizar o no un elemento en el DOM.
 Si la condición es false, el elemento no existe en el DOM.
 
 ```html
 <p v-if="visible">Esto se renderiza solo si visible es true</p>
 ```
+
 - true → se crea el elemento
 - false → no existe en el DOM
 
 #### v-model
+
 Sirve para enlazar datos en dos direcciones (two-way binding) entre un valor de JavaScript y un elemento de formulario.
 Cuando el usuario cambia el valor en el formulario, la variable de Vue también cambia, y viceversa.
 
 ```html
-<input v-model="nombre">
+<input v-model="nombre" />
 <p>Hola, {{ nombre }}</p>
 ```
 
 También se puede usar en un script con un ref(nombre).
 
+### Componentes
+
+#### Slots
+
+En los componentes podemos mostrar contenido que les mandamos del template padre:
+
+```html
+<fab-button>
+  <span>Hola mundo</span>
+</fab-button>
+```
+
+Y este span del ejemplo se puede recibir con un `<slot />` en el componente hijo:
+
+```html
+<template>
+  <button">
+    <slot />
+  </button>
+</template>
+```
+
+En algunos casos nos interesará tener varios slots, por lo que podemos distinguirlos con names. Componente hijo:
+
+```html
+<template>
+  <button">
+    <slot name="header" />
+  </button>
+</template>
+```
+
+Componente padre:
+
+```html
+<fab-button>
+  <template #header>
+    <span>Hola mundo</span>
+  </template>
+</fab-button>
+```
+
 ### Comunicación de componentes
+
 #### v-bind
 
 Para **pasar datos o atributos** a un elemento o componente en Vue, se usa la directiva `v-bind`.  
@@ -660,21 +725,16 @@ También se puede utilizar en un `v-for`, para enlazar automáticamente las clav
 
 ```html
 <div class="flex flex-col space-y-2">
-  <ChatBubble
-    v-for="message in messages"
-    :key="message.id"
-    v-bind="message" 
-  />
+  <ChatBubble v-for="message in messages" :key="message.id" v-bind="message" />
 
-    <!-- v-bind hace el mapeo automático de claves, equivalente a: -->
-    <!--
+  <!-- v-bind hace el mapeo automático de claves, equivalente a: -->
+  <!--
     :its-mine="message.itsMine"
     :message="message.message"
     :image="message.image"
     -->
-    <!-- ***Estas claves son iguales en ambos componentes
+  <!-- ***Estas claves son iguales en ambos componentes
     y vienen de una interfaz -->
-
 </div>
 ```
 
@@ -686,7 +746,7 @@ En el componente hijo, dentro del script:
 
 ```js
 const props = defineProps({
-  value: { type: Number, required: true }
+  value: { type: Number, required: true },
 });
 ```
 
@@ -708,29 +768,29 @@ interface Props {
 const props = defineProps<Props>();
 ```
 
-* Como en las demás interfaces, se puede poner ese valor como opcional con `?`: `value?: number`.
+- Como en las demás interfaces, se puede poner ese valor como opcional con `?`: `value?: number`.
 
-En options (script sin setup) se vería así: 
+En options (script sin setup) se vería así:
 
 ```js
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent, computed, ref } from "vue";
 
 export default defineComponent({
   props: {
     value: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
-  setup( props) {
+  setup(props) {
     const counter = ref(props.value);
     const squareCounter = computed(() => counter.value * counter.value);
 
     return {
       counter,
-      squareCounter
+      squareCounter,
     };
-  }
+  },
 });
 ```
 
@@ -745,13 +805,13 @@ Se pueden tipar para mayor seguridad en TypeScript.
 
 ```html
 <script setup lang="ts">
-const emit = defineEmits<{
-  sendMessage: [text: string];
-}>();
+  const emit = defineEmits<{
+    sendMessage: [text: string];
+  }>();
 
-function submit() {
-  emit("sendMessage", message.value);
-}
+  function submit() {
+    emit("sendMessage", message.value);
+  }
 </script>
 ```
 
@@ -776,10 +836,12 @@ El padre escucha ese evento con @send-message="miFuncion", y ahí es donde se ej
 > RESUMEN DE FLUJO
 
 > **Componente hijo**
+>
 > 1. Declara los eventos con `defineEmits`.
 > 2. Cuando ocurre algo (ej: un `click`), llama a `emit("evento", datos)`.
 
 > **Componente padre**
+>
 > 1. Escucha el evento con `@nombre-evento="funcion"`.
 > 2. Ejecuta la función correspondiente (ej: hacer `push` en un array).
 > 3. Como el array es **reactivo**, la vista se actualiza automáticamente (ej: la lista de mensajes).
@@ -830,14 +892,15 @@ export default router;
 
 #### Diferencia entre createWebHashHistory y createWebHistory
 
-- **`createWebHashHistory`**  
-  - URL: `/#/ruta`  
-  - Pros: Funciona en cualquier servidor  
+- **`createWebHashHistory`**
+
+  - URL: `/#/ruta`
+  - Pros: Funciona en cualquier servidor
   - Contras: URL con `#`, menos limpia
 
-- **`createWebHistory`**  
-  - URL: `/ruta`  
-  - Pros: URLs limpias y amigables  
+- **`createWebHistory`**
+  - URL: `/ruta`
+  - Pros: URLs limpias y amigables
   - Contras: Requiere configuración del servidor para redirigir todas las rutas a `index.html`
 
 #### Rutas Padres vs Rutas Hijas
@@ -845,9 +908,10 @@ export default router;
 En Vue Router, las rutas pueden ser **padres** o **hijas**:
 
 - **Rutas padres**:
+
   - Definen un layout o contenedor común.
   - Pueden tener **children**, que son las rutas hijas.
-  - Ejemplo:  
+  - Ejemplo:
     ```js
     {
       path: "/",
@@ -870,7 +934,8 @@ En Vue Router, las rutas pueden ser **padres** o **hijas**:
     }
     ```
 
-**Nota:**  
+**Nota:**
+
 - Si el padre tiene `path: "/"` y un hijo tiene `path: "/features"`, la ruta completa será `/features`.
 - Los hijos heredan la estructura del layout del padre.
 
@@ -897,11 +962,7 @@ Al saltar la 404 y darle al botón "volver al inicio", no nos interesa que el us
 
 ```html
 <!-- replace es para que no pueda volver atrás (al 404) -->
-<RouterLink
-  replace
-  class="..."
-  :to="{ name: 'home' }"
->
+<RouterLink replace class="..." :to="{ name: 'home' }">
   Back to homepage
 </RouterLink>
 ```
@@ -914,13 +975,13 @@ En el script del componente o en el composable, se puede manejar esto con vue ro
 
 ```html
 <script lang="ts" setup>
-import { useRouter } from 'vue-router';
+  import { useRouter } from "vue-router";
 
-const router = useRouter();
+  const router = useRouter();
 
-const onLogin = () => {
-  router.replace({ name: 'home' }); // con replace evitamos que pueda volver al login
-};
+  const onLogin = () => {
+    router.replace({ name: "home" }); // con replace evitamos que pueda volver al login
+  };
 </script>
 ```
 
@@ -949,19 +1010,19 @@ Cuando haya un backend contra el que autentificarse, la función se podrá poner
 import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 
 const isAuthenticatedGuard = async (
-  to:RouteLocationNormalized,
-  from:RouteLocationNormalized,
-  next:NavigationGuardNext
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
 ) => {
-  const userId = localStorage.getItem('userId');
-  localStorage.setItem('lastPath', to.path); // guardo la última ruta a la que ha intentado acceder
+  const userId = localStorage.getItem("userId");
+  localStorage.setItem("lastPath", to.path); // guardo la última ruta a la que ha intentado acceder
 
   if (!userId) {
-    return next({ name: 'login' });
+    return next({ name: "login" });
   }
 
   return next();
-}
+};
 
 export default isAuthenticatedGuard;
 ```
@@ -970,17 +1031,17 @@ Esto sería un ejemplo de llamada desde el login:
 
 ```html
 <script lang="ts" setup>
-import { useRouter } from 'vue-router';
+  import { useRouter } from "vue-router";
 
-const router = useRouter();
+  const router = useRouter();
 
-const onLogin = () => {
-  localStorage.setItem('userId', 'ABC-123');
+  const onLogin = () => {
+    localStorage.setItem("userId", "ABC-123");
 
-  const lastPath = localStorage.getItem('lastPath') ?? '/';
+    const lastPath = localStorage.getItem("lastPath") ?? "/";
 
-  router.replace(lastPath);
-};
+    router.replace(lastPath);
+  };
 </script>
 ```
 
@@ -1012,10 +1073,8 @@ Y así para un componente suelto:
 > **NOTA IMPROTANTE**<br>
 > Cuando hacemos keepalive de un componente, no estamos desmontándolo. Estamos desactivándolo. Por tanto, el `onMounted()` nos servirá para la primera vez que se monta ese componente. Para las posteriores se debería utilizar `onActivated()`.
 
-
 ### Router link active
 
-
-
 ### Testing
+
 XD
