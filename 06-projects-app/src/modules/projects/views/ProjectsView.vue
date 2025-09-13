@@ -1,5 +1,6 @@
 <template>
   <div class="overflow-x-auto w-full">
+    <h1 class="text-4xl mb-3 p-2 text-center">Proyectos</h1>
     <table class="table">
       <!-- head -->
       <thead>
@@ -8,14 +9,49 @@
           <th>Proyecto</th>
           <th>Tareas</th>
           <th>Avance</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="hover:bg-base-300">
-          <th>2</th>
-          <td>Hart Hagerty</td>
-          <td>Desktop Support Technician</td>
-          <td>Purple</td>
+        <tr
+          v-for="(project, index) in projectsStore.projectsWithCompletion"
+          :key="project.id"
+          class="hover:bg-base-300"
+        >
+          <th>{{ index + 1 }}</th>
+          <td>
+            <span
+              v-if="!editingProjectId || editingProjectId !== project.id"
+              @dblclick="startEditing(project.id, project.name)"
+              class="underline"
+            >
+              <RouterLink :to="`/project/${project.id}`">{{ project.name }}</RouterLink>
+            </span>
+            <input
+              v-else
+              :id="`project-edit-${project.id}`"
+              v-model="editedProjectName"
+              @keyup.enter="saveProjectName(project.id)"
+              @blur="saveProjectName(project.id)"
+              class="input input-sm"
+            />
+          </td>
+          <td>{{ project.taskCount }}</td>
+          <td>
+            <progress class="progress w-56" :value="project.completion" max="100"></progress>
+            {{ project.completion }}
+          </td>
+          <td>
+            <button
+              class="btn btn-primary btn-xs me-2"
+              @click="startEditing(project.id, project.name)"
+            >
+              Modificar
+            </button>
+            <button class="btn btn-error btn-xs" @click="projectsStore.removeProject(project.id)">
+              Eliminar
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -24,7 +60,7 @@
   <input-modal
     :open="modalOpen"
     @close="modalOpen = false"
-    @value="onNewValue"
+    @value="projectsStore.addProject"
     title="Añadir proyecto"
     subtitle="Escriba abajo el nombre de su proyecto"
     placeholder="Ingrese el nombre del proyecto"
@@ -63,12 +99,32 @@ import FabButton from '@/modules/common/components/FabButton.vue';
 import InputModal from '@/modules/common/components/InputModal.vue';
 import AddCircle from '@/modules/common/icons/AddCircle.vue';
 import ModalIcon from '@/modules/common/icons/ModalIcon.vue';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
+import { useProjectsStore } from '../store/projects.store';
 
 const modalOpen = ref(false);
 const customModalOpen = ref(false);
+const editingProjectId = ref<string | null>(null);
+const editedProjectName = ref('');
 
-const onNewValue = (projectName: string) => {
-  console.log({ projectName });
+const projectsStore = useProjectsStore();
+
+const startEditing = async (projectId: string, currentName: string) => {
+  editingProjectId.value = projectId;
+  editedProjectName.value = currentName;
+
+  await nextTick();
+  setTimeout(() => {
+    const el = document.getElementById(`project-edit-${projectId}`) as HTMLInputElement | null;
+    if (el) {
+      el.focus();
+      el.select();
+    }
+  }, 75); // delay para asegurar el render
+};
+
+const saveProjectName = (projectId: string) => {
+  projectsStore.updateProjectName(projectId, editedProjectName.value);
+  editingProjectId.value = null;
 };
 </script>

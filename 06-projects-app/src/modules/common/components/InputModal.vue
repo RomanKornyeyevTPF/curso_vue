@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 
 interface Props {
   open: boolean;
@@ -37,7 +37,7 @@ interface Props {
   subtitle?: string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const emits = defineEmits<{
   close: [void];
@@ -46,6 +46,23 @@ const emits = defineEmits<{
 
 const inputValue = ref('');
 const inputRef = ref<HTMLInputElement | null>(null);
+
+watch(
+  () => props.open,
+  async (open) => {
+    if (open) {
+      await nextTick();
+      console.log('inputRef: ', inputRef.value);
+      if (!inputRef.value) {
+        console.warn(
+          'inputRef es null — revisa si el input está en otro componente o si usas v-show/display:none',
+        );
+      }
+      // Fallback "goloso" — debería evitarse si no es necesario:
+      setTimeout(() => inputRef.value?.focus(), 50);
+    }
+  },
+);
 
 const submiteValue = () => {
   if (!inputValue.value) {
